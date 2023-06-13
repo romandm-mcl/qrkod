@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Форма для генерации QR-кода</title>
+    <script type="text/javascript"></script>
+    <script src="./qrcode/qrcode.min.js"></script>
+    <script src="./qrcode/JsBarcode.all.min.js"></script>
+	<style> 
+              body{
+              margin: 0;
+              width: 600px;
+              }
+              
+              #label-input { width: 100px; /* Ширина */
+					
+                      text-align: right; /* Выравниваем по правому краю */ 
+                      float: left; /* Выстраиваем элементы рядом  */
+                      margin-right: 10px; /*Расстояние от текста до текстового поля  */
+                      line-height: 15px; /* Выравниваем по высоте */ 
+                    } 
+              #nr-auto, #location, #nr-bram {
+                      width: 200px;
+                      padding: 3px;
+                      margin: 5px;
+              }
+              button{
+                margin: 20px 10px;
+              }
+              #btn, #qrcode{
+                margin: 0 110px;
+              }
+     </style> 
+  </head>
+  <body>
+    <h1>Generator dokumentów załadunkowych:</h1>
+     <datalist id="cityfields">
+        <option>DHL DE</option>            
+		<option>Inpost</option>
+		<option>Komplety LCL</option>
+		<option>DHL PL MIX</option>
+		<option>DHL PL PO</option>
+		<option>DHL PL RZ</option>
+		<option>DHL PL ZG</option>
+		<option>DHL SE/ES</option>
+		<option>DHL SE</option>
+		<option>DHL ES</option>
+		<option>DHL PL WA</option>
+		<option>DHL PL KZ</option>
+		<option>DPD AT</option>
+		<option>DPD CZ</option>
+		<option>DPD DE</option>
+		<option>LCL GENIKI GR</option>
+		<option>LCL ACS GR</option>
+		<option>LCL DPD LT</option>
+		<option>LCL DR</option>
+		<option>LCL ZAS</option>
+		<option>LCL ZAS SK</option>
+		<option>LCL PPL</option>
+		<option>LCL DPD SK</option>
+		<option>LCL CH</option>
+		<option>LCL GLS RO</option>
+		<option>LCL FAN RO</option>
+		<option>LCL GLS HU</option>
+		<option>LCL GLS HR</option>
+		<option>LCL GLS SI</option>
+		<option>LCL BARTOLINI IT</option>
+		<option>LCL SPEEDY BG</option>
+		<option>LCL LA POSTE FR</option>
+		<option>LCL HU FOX</option>
+		<option>DSV LV</option>
+		<option>DSV LT</option>
+		<option>FedEx</option>
+		<option>UPS SE / ES</option>
+		<option>SELECTRO UA</option>
+		<option>LCL UA</option>
+		<option>Cargo Partner</option>
+		<option>WOWIX DPD SK</option>
+		<option>SEVEN SENDERS AT</option>
+		<option>OUR COURIER MALL</option>
+		<option>DHL UA</option>
+		<option>CZ PPL LUZ</option>
+		<option>HALF PRICE</option>
+		<option>ANGORA</option>
+		<option>GIELDA</option>
+		<option>EOB </option>
+		<option>ROZZO</option>
+		<option>UPS</option>
+		<option>Wiltex | Outlet</option>
+		<option>InPost IT</option>
+		<option>Hi Logistics </option>
+		<option>Transsped LT</option>
+		<option>Transsped LV</option>
+		<option>SESJA FOTO</option>
+		<option>ZIL SK</option>
+		<option>LCL Poste IT</option>
+		<option>IT GLS</option>
+		<option>Meest UA</option>
+		<option>GBA UA</option>
+		<option>PPL  GIEŁDA</option>
+		<option>PVH</option>
+		<option>LCL BG ECONT</option>
+		<option>RA/SIMPLE</option>
+		<option>K1</option>
+		<option>GLS HU</option>
+		<option>RO SAMEDAY</option>
+		<option>LV GIEŁDA</option>
+		<option>L1</option>
+		<option>Guess</option>
+		<option>LCL</option>
+		<option>Zwrot Palet</option>
+		<option>Odsyłka towaru</option>
+		<option>DPD RETAIL </option>
+		<option>Złom/Complaints</option>
+     </datalist>
+	<form>
+      <label for="nr-auto"id="label-input">Tablice pojazdu:</label>
+      <input type="text" id="nr-auto" name="nr-auto" ><br>
+
+      <label for="location"id="label-input">Kierunek:</label>
+      <input type="text" id="location" name="location" list="cityfields">
+		<label><input type="radio" name="codeT1" value="paleta" checked> Palety </label>
+		<label><input type="radio" name="codeT1" value="luz" > LUZ </label>
+      	  <br>
+
+      <label for="nr-bram" id="label-input">   Numer bramy:   </label>
+      <input type="text" id="nr-bram" name="nr-bram"><br>
+	  <label>
+	  <div id="btn">
+      <input type="radio" name="codeType" value="qr" checked> QR-kod
+    </label>
+    <label>
+      <input type="radio" name="codeType" value="barcode"> Barcode
+    </label>
+	<br>
+      <button type="button" onclick="generateQR()">Wygenerować kod</button>
+	  </div>
+    </form>
+	
+    <!-- <div id="codeContainer"></div> -->
+    <div id="qrcode"></div>
+    <svg id="barcode"></svg>
+    
+    
+
+    <script>
+      function generateQR() {
+        // Получаем значения из формы
+        var string1 = document.getElementById('nr-auto').value.replace("/"," ").toUpperCase();
+        var string2 = document.getElementById('location').value.replace("/"," ").toUpperCase();
+        var string3 = document.getElementById('nr-bram').value===''?'':'BR'+document.getElementById('nr-bram').value.replace("/"," ");
+        var codeType = document.querySelector('input[name="codeType"]:checked').value;
+		
+		var luzPaleta = '';
+		if (string2!==''){luzPaleta=document.querySelector('input[name="codeT1"]:checked').value === "luz"? "LUZ":"PAL"};
+        var qrCode  = document.getElementById("qrcode");
+        var barcode  = document.getElementById("barcode");
+        // Очищаем содержимое контейнера перед генерацией нового кода
+            qrCode.innerHTML = "";
+            barcode.innerHTML = "";
+        // Складываем значения и получаем итоговую строку
+		
+        var result = string1 + ' ' + string2 + ' ' + luzPaleta + ' ' + string3;	
+		//console.log(result.length);
+		if (result.length>35) {
+			window.alert("Zmniejsz liczbę znaków w Tablice pojazdu");
+			return false;
+			codeType="";
+		}
+        // Генерируем QR-код
+        if (codeType === "qr") {
+            // var qrCode = new QRCode(document.getElementById('qrcode'), {
+              new QRCode(qrCode, {
+              text: result,
+              width: 256,
+              height: 256,
+              colorDark: "#000000",
+              colorLight: "#ffffff",
+              correctLevel: QRCode.CorrectLevel.H
+            });
+          }else if (codeType === "barcode") {
+            // Генерируем штрих-код на основе суммы слов
+            JsBarcode(barcode, result, {
+              format: "CODE128",
+              displayValue: true,
+              fontSize: 20,
+              margin: 10
+            });
+          }
+      }
+    </script>
+  </body>
+</html>
